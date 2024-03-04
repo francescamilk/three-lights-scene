@@ -8,21 +8,41 @@ const gui = new GUI();
 // Canvas
 const canvas = document.querySelector('canvas#webgl');
 
-// Scene         (with axes helper)
+// Scene
+const scene = new THREE.Scene();
 // X is red. Y is green. Z is blue.
-const scene      = new THREE.Scene();
-const axesHelper = new THREE.AxesHelper();
-scene.add(axesHelper);
+// const axesHelper = new THREE.AxesHelper();
+// scene.add(axesHelper);
 
 // Lights
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+// rays coming from everywhere                    (does not have a direction)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLight);
 
-const pointLight = new THREE.PointLight(0xffffff, 50);
-pointLight.position.x = 2;
-pointLight.position.y = 3;
-pointLight.position.z = 4;
+// first_val from the top, second_val from the bottom (shade from everywhere)
+const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.9);
+scene.add(hemisphereLight);
+
+// rays coming parallel from the same direction          (simulates the sun)
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.9);
+directionalLight.position.set(1, 0.25, 0);
+scene.add(directionalLight);
+
+// rays coming from a single point in all directions  (simulates a lighbulb)
+const pointLight = new THREE.PointLight(0xffffff, 1.5);
+pointLight.position.set(1, -0.5, 1);
 scene.add(pointLight);
+
+// rays coming from a rectangular plane     (simulates photoshoot lightings)
+const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 6, 1, 1);
+rectAreaLight.position.set(-1.5, 0, 1.5);
+rectAreaLight.lookAt(new THREE.Vector3());
+scene.add(rectAreaLight);
+
+// rays coming from a single point in one direction (simulates a flashlight)
+const spotLight = new THREE.SpotLight(0x78ff00, 3.5, 10, Math.PI * 0.1, 0.25, 1);
+spotLight.position.set(0, 2, 3);
+scene.add(spotLight);
 
 // &plug debugger
 gui
@@ -31,24 +51,29 @@ gui
     .name('ambient light intensity');
 
 gui
-    .add(ambientLight, 'intensity')
+    .add(hemisphereLight, 'intensity')
     .min(0).max(3).step(0.001)
+    .name('hemisphere light intensity');
+
+gui
+    .add(directionalLight, 'intensity')
+    .min(0).max(3).step(0.001)
+    .name('directional light intensity');
+
+gui
+    .add(pointLight, 'intensity')
+    .min(0).max(5).step(0.001)
     .name('point light intensity');
 
 gui
-    .add(pointLight.position, 'x')
-    .min(0).max(5).step(0.001)
-    .name('point light X');
+    .add(rectAreaLight, 'intensity')
+    .min(0).max(15).step(0.001)
+    .name('react area light intensity');
 
 gui
-    .add(pointLight.position, 'y')
-    .min(0).max(5).step(0.001)
-    .name('point light Y');
-
-gui
-    .add(pointLight.position, 'z')
-    .min(0).max(5).step(0.001)
-    .name('point light Z');
+    .add(spotLight, 'intensity')
+    .min(0).max(10).step(0.001)
+    .name('spot light intensity');
 
 // Material
 const material = new THREE.MeshStandardMaterial();
@@ -104,9 +129,7 @@ window.addEventListener('resize', () =>
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
-camera.position.x = 1;
-camera.position.y = 1;
-camera.position.z = 2;
+camera.position.set(1, 1, 2);
 scene.add(camera);
 
 // Controls
