@@ -2,14 +2,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import GUI from 'lil-gui';
 
-// Debugger inir
+// Debugger init
 const gui = new GUI();
 
 // Canvas
 const canvas = document.querySelector('canvas#webgl');
 
-// Scene
-const scene = new THREE.Scene();
+// Scene         (with axes helper)
+// X is red. Y is green. Z is blue.
+const scene      = new THREE.Scene();
+const axesHelper = new THREE.AxesHelper();
+scene.add(axesHelper);
 
 // Lights
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
@@ -20,6 +23,32 @@ pointLight.position.x = 2;
 pointLight.position.y = 3;
 pointLight.position.z = 4;
 scene.add(pointLight);
+
+// &plug debugger
+gui
+    .add(ambientLight, 'intensity')
+    .min(0).max(3).step(0.001)
+    .name('ambient light intensity');
+
+gui
+    .add(ambientLight, 'intensity')
+    .min(0).max(3).step(0.001)
+    .name('point light intensity');
+
+gui
+    .add(pointLight.position, 'x')
+    .min(0).max(5).step(0.001)
+    .name('point light X');
+
+gui
+    .add(pointLight.position, 'y')
+    .min(0).max(5).step(0.001)
+    .name('point light Y');
+
+gui
+    .add(pointLight.position, 'z')
+    .min(0).max(5).step(0.001)
+    .name('point light Z');
 
 // Material
 const material = new THREE.MeshStandardMaterial();
